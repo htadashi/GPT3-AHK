@@ -104,10 +104,17 @@ GetText(ByRef MyText = "", Option = "Copy")
 ; Send text from a variable while preserving the clipboard.
 PutText(MyText, Option = "")
 {
+   ; Decode text
+   vSize := StrPut(MyText, "CP0")
+   VarSetCapacity(vUtf8, vSize)
+   vSize := StrPut(MyText, &vUtf8, vSize, "CP0")
+   DecodedText := StrGet(&vUtf8, "UTF-8")
+
+   ; Save clipboard and paste MyText
    SavedClip := ClipboardAll 
    Clipboard = 
    Sleep 20
-   Clipboard := MyText
+   Clipboard := DecodedText
    If (Option == "AddSpace")
    {
       Send {Right}

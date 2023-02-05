@@ -25,6 +25,7 @@ Menu, Tray, Icon, %I_Icon%
 
 Hotkey, %HOTKEY_AUTOCOMPLETE%, AutocompleteFcn
 Hotkey, %HOTKEY_INSTRUCT%, InstructFcn
+OnExit("ExitFunc")
 
 IfNotExist, settings.ini     
 {
@@ -136,4 +137,12 @@ SetSystemCursor()
 RestoreCursors() 
 {
    DllCall( "SystemParametersInfo", UInt, 0x57, UInt,0, UInt,0, UInt,0 )
+}
+
+ExitFunc(ExitReason, ExitCode)
+{
+    if ExitReason not in Logoff,Shutdown
+    {
+        RestoreCursors()
+    }
 }

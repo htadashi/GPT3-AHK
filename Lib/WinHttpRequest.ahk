@@ -1,7 +1,7 @@
 ﻿
-; Version: 2022.11.11.1
-; Usage and examples: https://redd.it/mcjj4s
-; Testing: http://httpbin.org/ | http://ptsv2.com/
+; Custom version of WinHttpRequest 2022.11.11.1 (https://redd.it/mcjj4s)
+; 
+; Replaced function _Text to parse ResponseBody instead of ResponseText
 
 WinHttpRequest(oOptions:="") {
     static instance := ""
@@ -131,7 +131,7 @@ class WinHttpRequest extends WinHttpRequest._Call {
         out := new this._Response()
         out.Headers := this._Headers()
         out.Status := this.whr.Status
-        out.Text := this._Text(oOptions.Encoding)
+        out.Text := this._Text()
         return out
     }
     ;endregion
@@ -248,18 +248,18 @@ class WinHttpRequest extends WinHttpRequest._Call {
         FileOpen(sTarget, 0x1).RawWrite(pData + 0, length)
     }
 
-    _Text(sEncoding) {
-        try {
-            response := ""
-            response := this.whr.ResponseText
-        }
-        if (!response || sEncoding) {
-            arr := this.whr.ResponseBody
-            pData := NumGet(ComObjValue(arr) + 8 + A_PtrSize)
-            length := arr.MaxIndex() + 1
-            response := StrGet(pData, length, sEncoding)
-            ObjRelease(arr)
-        }
+    ; https://www.reddit.com/r/AutoHotkey/comments/fgmy9x/comment/fk77lt7/
+    _Text() {
+
+        body := this.whr.ResponseBody
+
+        pdata :=
+
+        DllCall("oleaut32\SafeArrayAccessData", "ptr", ComObjValue(body), "ptr*", pdata)
+        length := (body.MaxIndex() - body.MinIndex() + 1)
+        response := StrGet(pdata, length, "utf-8")
+        DllCall("oleaut32\SafeArrayUnaccessData", "ptr", ComObjValue(body))
+
         return response
     }
 

@@ -1,4 +1,4 @@
-; AutoHotkey script that enables you to use GPT3 in any input field on your computer
+﻿; AutoHotkey script that enables you to use GPT3 in any input field on your computer
 
 ; -- Configuration --
 #SingleInstance  ; Allow only one instance of this script to be running.
@@ -104,17 +104,11 @@ GetText(ByRef MyText = "", Option = "Copy")
 ; Send text from a variable while preserving the clipboard.
 PutText(MyText, Option = "")
 {
-   ; Decode text
-   vSize := StrPut(MyText, "CP0")
-   VarSetCapacity(vUtf8, vSize)
-   vSize := StrPut(MyText, &vUtf8, vSize, "CP0")
-   DecodedText := StrGet(&vUtf8, "UTF-8")
-
    ; Save clipboard and paste MyText
    SavedClip := ClipboardAll 
    Clipboard = 
    Sleep 20
-   Clipboard := DecodedText
+   Clipboard := MyText
    If (Option == "AddSpace")
    {
       Send {Right}

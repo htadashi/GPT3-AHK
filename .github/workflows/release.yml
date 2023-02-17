@@ -1,0 +1,25 @@
+name: Compile using Ahk2Exe and release the executable file
+
+on: push
+
+jobs:
+  Release:
+    name: Release
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Ahk2Exe
+        uses: nekocodeX/GitHub-Action-Ahk2Exe@v1.1.0
+        with:
+          in: GPT3-AHK.ahk
+          icon: GPT3-AHK.ico
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: GPT3-AHK.exe
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

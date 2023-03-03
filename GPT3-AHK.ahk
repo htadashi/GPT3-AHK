@@ -54,7 +54,7 @@ InstructFcn:
       body.instruction := UserInput ; The instruction that tells how to edit the prompt
       headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
       SetSystemCursor()
-      response := http.POST(url, JSON.Dump(body), headers, {Object:true})
+      response := http.POST(url, JSON.Dump(body), headers, {Object:true, Encoding:"UTF-8"})
       obj := JSON.Load(response.Text)
       PutText(obj.choices[1].text, "")
       RestoreCursors()
@@ -72,7 +72,7 @@ AutocompleteFcn:
    body.temperature := MODEL_AUTOCOMPLETE_TEMP + 0 ; Sampling temperature to use 
    headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
    SetSystemCursor()
-   response := http.POST(url, JSON.Dump(body), headers, {Object:true})
+   response := http.POST(url, JSON.Dump(body), headers, {Object:true, Encoding:"UTF-8"})
    obj := JSON.Load(response.Text)
    PutText(obj.choices[1].message.content, "AddSpace")
    RestoreCursors()   

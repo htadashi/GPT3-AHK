@@ -8,7 +8,7 @@ HOTKEY_AUTOCOMPLETE = #o  ; Win+o
 ; This is the hotkey used to edit prompts
 HOTKEY_INSTRUCT = #+o  ; Win+shift+o
 ; Models settings
-MODEL_AUTOCOMPLETE_ID := "text-davinci-003" 
+MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo" 
 MODEL_AUTOCOMPLETE_MAX_TOKENS := 200
 MODEL_AUTOCOMPLETE_TEMP := 0.8
 MODEL_INSTRUCT_ID := "text-davinci-edit-001" 
@@ -64,17 +64,17 @@ InstructFcn:
 ; Auto-complete the phrase 
 AutocompleteFcn:
    GetText(CopiedText, "Copy")
-   url := "https://api.openai.com/v1/completions"
+   url := "https://api.openai.com/v1/chat/completions"
    body := {}
    body.model := MODEL_AUTOCOMPLETE_ID ; ID of the model to use.   
-   body.prompt := CopiedText ; The prompt to generate completions for
+   body.messages := [{"role": "user", "content": CopiedText}] ; The prompt to generate completions for
    body.max_tokens := MODEL_AUTOCOMPLETE_MAX_TOKENS ; The maximum number of tokens to generate in the completion.
    body.temperature := MODEL_AUTOCOMPLETE_TEMP + 0 ; Sampling temperature to use 
    headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
    SetSystemCursor()
    response := http.POST(url, JSON.Dump(body), headers, {Object:true})
    obj := JSON.Load(response.Text)
-   PutText(obj.choices[1].text, "AddSpace")
+   PutText(obj.choices[1].message.content, "AddSpace")
    RestoreCursors()   
    Return
 

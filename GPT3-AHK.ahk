@@ -53,11 +53,13 @@ InstructFcn:
       body.input := CutText ; The prompt to edit.
       body.instruction := UserInput ; The instruction that tells how to edit the prompt
       headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
+      TrayTip, GPT3-AHK, Asking ChatGPT...
       SetSystemCursor()
       response := http.POST(url, JSON.Dump(body), headers, {Object:true, Encoding:"UTF-8"})
       obj := JSON.Load(response.Text)
       PutText(obj.choices[1].text, "")
       RestoreCursors()
+      TrayTip
    }
    Return   
 
@@ -71,11 +73,13 @@ AutocompleteFcn:
    body.max_tokens := MODEL_AUTOCOMPLETE_MAX_TOKENS ; The maximum number of tokens to generate in the completion.
    body.temperature := MODEL_AUTOCOMPLETE_TEMP + 0 ; Sampling temperature to use 
    headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
+   TrayTip, GPT3-AHK, Asking ChatGPT...
    SetSystemCursor()
    response := http.POST(url, JSON.Dump(body), headers, {Object:true, Encoding:"UTF-8"})
    obj := JSON.Load(response.Text)
    PutText(obj.choices[1].message.content, "AddSpace")
    RestoreCursors()   
+   TrayTip
    Return
 
 ; -- Auxiliar functions --

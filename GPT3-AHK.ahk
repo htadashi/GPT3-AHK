@@ -5,13 +5,12 @@
 
 ; This is the hotkey used to autocomplete prompts
 HOTKEY_AUTOCOMPLETE = #o  ; Win+o
-; This is the hotkey used to edit prompts
-HOTKEY_INSTRUCT = #+o  ; Win+shift+o
+; This is the hotkey used to edit text
+HOTKEY_EDIT = #+o  ; Win+shift+o
 ; Models settings
 MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo" 
 MODEL_AUTOCOMPLETE_MAX_TOKENS := 200
 MODEL_AUTOCOMPLETE_TEMP := 0.8
-MODEL_INSTRUCT_ID := "text-davinci-edit-001" 
 
 ; -- Initialization --
 ; Dependencies
@@ -25,7 +24,7 @@ IfExist, %I_Icon%
 Menu, Tray, Icon, %I_Icon%
 
 Hotkey, %HOTKEY_AUTOCOMPLETE%, AutocompleteFcn
-Hotkey, %HOTKEY_INSTRUCT%, InstructFcn
+Hotkey, %HOTKEY_EDIT%, InstructFcn
 OnExit("ExitFunc")
 
 IfNotExist, settings.ini     
@@ -47,17 +46,18 @@ InstructFcn:
    if ErrorLevel {
       PutText(CutText)
    }else{
-      url := "https://api.openai.com/v1/edits"
+      url := "https://api.openai.com/v1/chat/completions"
       body := {}
-      body.model := MODEL_INSTRUCT_ID ; ID of the model to use.
-      body.input := CutText ; The prompt to edit.
-      body.instruction := UserInput ; The instruction that tells how to edit the prompt
+      body.model := MODEL_AUTOCOMPLETE_ID ; ID of the model to use.
+      body.messages := [{"role": "user", "content": CutText}] ; The text to edit
+      body.max_tokens := MODEL_AUTOCOMPLETE_MAX_TOKENS ; The maximum number of tokens to generate in the completion.
+      body.temperature := MODEL_AUTOCOMPLETE_TEMP + 0 ; Sampling temperature to use 
       headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
       TrayTip, GPT3-AHK, Asking ChatGPT...
       SetSystemCursor()
       response := http.POST(url, JSON.Dump(body), headers, {Object:true, Encoding:"UTF-8"})
       obj := JSON.Load(response.Text)
-      PutText(obj.choices[1].text, "")
+      PutText(obj.choices[1].message.content, "")
       RestoreCursors()
       TrayTip
    }

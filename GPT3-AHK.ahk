@@ -10,7 +10,7 @@ HOTKEY_EDIT = #+o  ; Win+shift+o
 ; Models settings
 global MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
 global MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo"
-CUSTOM_MODEL_ENDPOINT := "http://172.17.52.156:8000/chat/completions"
+CUSTOM_MODEL_ENDPOINT := "http://0.0.0.0:8000/chat/completions"
 CUSTOM_MODEL_ID := "together_ai/togethercomputer/llama-2-70b-chat"
 MODEL_AUTOCOMPLETE_MAX_TOKENS := 200
 MODEL_AUTOCOMPLETE_TEMP := 0.8

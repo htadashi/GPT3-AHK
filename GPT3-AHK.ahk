@@ -8,7 +8,8 @@ HOTKEY_AUTOCOMPLETE = #o  ; Win+o
 ; This is the hotkey used to edit text
 HOTKEY_EDIT = #+o  ; Win+shift+o
 ; Models settings
-MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo" 
+global MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
+global MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo" 
 MODEL_AUTOCOMPLETE_MAX_TOKENS := 200
 MODEL_AUTOCOMPLETE_TEMP := 0.8
 
@@ -22,6 +23,13 @@ http := WinHttpRequest()
 I_Icon = GPT3-AHK.ico
 IfExist, %I_Icon%
 Menu, Tray, Icon, %I_Icon%
+; Create custom menus
+Menu, LLMMenu, Add, GPT3, SelectLLMHandler
+Menu, LLMMenu, Add, GPT4, SelectLLMHandler
+Menu, Tray, Add, Select LLM, :LLMMenu  
+Menu, Tray, Add  ; Creates a separator line.
+Menu, Tray, NoStandard
+Menu, Tray, Standard
 
 Hotkey, %HOTKEY_AUTOCOMPLETE%, AutocompleteFcn
 Hotkey, %HOTKEY_EDIT%, InstructFcn
@@ -37,6 +45,16 @@ Else
   IniRead, API_KEY, settings.ini, OpenAI, API_KEY  
 }
 Return
+
+SelectLLMHandler:
+   if (A_ThisMenuItem = "GPT3") {
+      MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
+      MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo"	
+   } else if (A_ThisMenuItem = "GPT4") {
+      MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
+      MODEL_AUTOCOMPLETE_ID := "gpt-4"
+   } 
+   Return
 
 ; -- Main commands --
 ; Edit the phrase

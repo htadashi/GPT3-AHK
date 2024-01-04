@@ -16,3 +16,4 @@ An [AutoHotKey](https://www.autohotkey.com/) script that enables you to use [GPT
 - To complete a phrase, select it and press `Win+o`
 - To instruct GPT3 to modify a phrase, select it and press `Win+Shift+o`
 - To change the model, right click on the icon at the taskbar and use the option `Select LLM` to select the desired model
+- For custom models, change the `CUSTOM_MODEL_ENDPOINT` and `CUSTOM_MODEL_ID` variables to respectively point out to your server IP and to your desired model name.

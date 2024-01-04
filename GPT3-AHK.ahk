@@ -9,7 +9,9 @@ HOTKEY_AUTOCOMPLETE = #o  ; Win+o
 HOTKEY_EDIT = #+o  ; Win+shift+o
 ; Models settings
 global MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
-global MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo" 
+global MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo"
+CUSTOM_MODEL_ENDPOINT := "http://172.17.52.156:8000/chat/completions"
+CUSTOM_MODEL_ID := "together_ai/togethercomputer/llama-2-70b-chat"
 MODEL_AUTOCOMPLETE_MAX_TOKENS := 200
 MODEL_AUTOCOMPLETE_TEMP := 0.8
 
@@ -26,6 +28,7 @@ Menu, Tray, Icon, %I_Icon%
 ; Create custom menus
 Menu, LLMMenu, Add, GPT3, SelectLLMHandler
 Menu, LLMMenu, Add, GPT4, SelectLLMHandler
+Menu, LLMMenu, Add, Custom, SelectLLMHandler
 Menu, Tray, Add, Select LLM, :LLMMenu  
 Menu, Tray, Add  ; Creates a separator line.
 Menu, Tray, NoStandard
@@ -37,22 +40,36 @@ OnExit("ExitFunc")
 
 IfNotExist, settings.ini     
 {
-  InputBox, API_KEY, Please insert your OpenAI API key, API key, , 270, 145
-  IniWrite, %API_KEY%, settings.ini, OpenAI, API_KEY
+   InputBox, OPENAI_API_KEY, Please insert your OpenAI API key, Open AI API key, , 270, 145
+   IniWrite, %OPENAI_API_KEY%, settings.ini, OpenAI, API_KEY
+   MsgBox, 4,, Do you want to use a custom model?
+   ; Check the result of the message box
+   IfMsgBox, Yes
+      InputBox, CUSTOM_API_KEY, Please insert your custom model API key, Custom Model API key, , 270, 145
+      IniWrite, %CUSTOM_API_KEY%, settings.ini, CustomModel, API_KEY      
+   IfMsgBox, No
+      IniWrite, %CUSTOM_API_KEY%, settings.ini, CustomModel, ""  
 } 
 Else
 {
-  IniRead, API_KEY, settings.ini, OpenAI, API_KEY  
+   IniRead, OPENAI_API_KEY, settings.ini, OpenAI, API_KEY  
+   IniRead, CUSTOM_API_KEY, settings.ini, CustomModel, API_KEY  
 }
-Return
+global API_KEY := OPENAI_API_KEY
 
 SelectLLMHandler:
    if (A_ThisMenuItem = "GPT3") {
+      API_KEY := OPENAI_API_KEY
       MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
       MODEL_AUTOCOMPLETE_ID := "gpt-3.5-turbo"	
    } else if (A_ThisMenuItem = "GPT4") {
+      API_KEY := OPENAI_API_KEY
       MODEL_ENDPOINT := "https://api.openai.com/v1/chat/completions"
       MODEL_AUTOCOMPLETE_ID := "gpt-4"
+   } else if (A_ThisMenuItem = "Custom") {
+      API_KEY := CUSTOM_API_KEY
+      MODEL_ENDPOINT := CUSTOM_MODEL_ENDPOINT
+      MODEL_AUTOCOMPLETE_ID := CUSTOM_MODEL_ID
    } 
    Return
 
@@ -64,7 +81,7 @@ InstructFcn:
    if ErrorLevel {
       PutText(CutText)
    }else{
-      url := "https://api.openai.com/v1/chat/completions"
+      url := MODEL_ENDPOINT
       body := {}
       body.model := MODEL_AUTOCOMPLETE_ID ; ID of the model to use.
       body.messages := [{"role": "user", "content": CutText}] ; The text to edit
@@ -84,7 +101,7 @@ InstructFcn:
 ; Auto-complete the phrase 
 AutocompleteFcn:
    GetText(CopiedText, "Copy")
-   url := "https://api.openai.com/v1/chat/completions"
+   url := MODEL_ENDPOINT
    body := {}
    body.model := MODEL_AUTOCOMPLETE_ID ; ID of the model to use.   
    body.messages := [{"role": "user", "content": CopiedText}] ; The prompt to generate completions for

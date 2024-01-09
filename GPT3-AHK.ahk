@@ -84,7 +84,7 @@ InstructFcn:
       url := MODEL_ENDPOINT
       body := {}
       body.model := MODEL_AUTOCOMPLETE_ID ; ID of the model to use.
-      body.messages := [{"role": "user", "content": CutText}] ; The text to edit
+      body.messages := [{"role": "user", "content": UserInput . CutText}] ; The text to edit
       body.max_tokens := MODEL_AUTOCOMPLETE_MAX_TOKENS ; The maximum number of tokens to generate in the completion.
       body.temperature := MODEL_AUTOCOMPLETE_TEMP + 0 ; Sampling temperature to use 
       headers := {"Content-Type": "application/json", "Authorization": "Bearer " . API_KEY}
